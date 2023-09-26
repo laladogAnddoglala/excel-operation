@@ -20,7 +20,7 @@ namespace ExcelConsoleApp
             }
 
             var filePath = excelFiles[0];
-            // var filePath = @"C:\Users\luosipai\Desktop\Excel\Hifu系列发品关键词.xlsx";
+            // var filePath
 
             // Ensure the license context is set (for EPPlus 5 and above)
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -29,7 +29,15 @@ namespace ExcelConsoleApp
             var worksheet = package.Workbook.Worksheets[0];  // Gets the first worksheet
 
             int rowCount = worksheet.Dimension.Rows;
-            int colCount = worksheet.Dimension.Columns;
+            // int colCount = worksheet.Dimension.Columns;
+
+            // Header count
+            int nonEmptyHeaderCount = 1;
+            while (!string.IsNullOrEmpty(worksheet.Cells[1, nonEmptyHeaderCount].Text))
+            {
+                nonEmptyHeaderCount++;
+            }
+            int colCount = nonEmptyHeaderCount - 1;
 
             List<CusCol> colRrep = new List<CusCol>(); //Columns info
 
@@ -48,7 +56,8 @@ namespace ExcelConsoleApp
                     }
                 }
 
-                int re = (int)Char.GetNumericValue(columnName[0]); // Get Repeatability
+                // int re = (int)Char.GetNumericValue(columnName[0]); // Get Repeatability
+                int re = Int32.Parse(columnName);
 
                 colRrep.Add(new CusCol { Cnum = col, Cname = columnName, Clength = nonEmptyCellCount, Reable = re });
             }
@@ -66,7 +75,7 @@ namespace ExcelConsoleApp
 
             List<List<string>> ranCol = new List<List<string>>();
             Random random = new Random();
-            for (int i = 0; i < outputNum; i++)
+            for (int i = 0; i < outputNum; i++) // Yeild
             {
                 List<string> data = new();
                 foreach (CusCol c in colRrep)
@@ -95,17 +104,31 @@ namespace ExcelConsoleApp
                         rep2 = worksheet.Cells[ran2, c.Cnum].Text;
                     }
 
+                    //     if (rep1 == rep2)
+                    //     {
+                    //         data.Add(rep1);
+                    //         Console.Write(c.Cnum + "-" + rep1 + " ");  // Show Test
+                    //     }
+                    //     else
+                    //     {
+                    //         data.Add(rep1);
+                    //         data.Add(rep2);
+                    //         Console.Write(c.Cnum + "-" + rep1 + " ");
+                    //         Console.Write(c.Cnum + "-" + rep2 + " ");
+                    //     }
+                    // }
+
                     if (rep1 == rep2)
                     {
                         data.Add(rep1);
-                        Console.Write(c.Cnum + "-" + rep1 + " ");
+                        Console.Write(rep1 + " "); // Show Output
                     }
                     else
                     {
                         data.Add(rep1);
                         data.Add(rep2);
-                        Console.Write(c.Cnum + "-" + rep1 + " ");
-                        Console.Write(c.Cnum + "-" + rep2 + " ");
+                        Console.Write(rep1 + " ");
+                        Console.Write(rep2 + " ");
                     }
                 }
                 ranCol.Add(data);
@@ -130,12 +153,12 @@ namespace ExcelConsoleApp
             Console.WriteLine($"Data written to {outputFilePath}");
 
             // Display the row names and their counts
-            foreach (var entry in colRrep)
-            {
-                // Console.WriteLine($"Cnum: '{entry.Cnum}' Cname: '{entry.Cname}' Clength: '{entry.Clength}' CRe: '{entry.Reable}'");
-                // string combinedString = string.Join( " ", ranCol);
-                // Console.WriteLine(combinedString);
-            }
+            // foreach (var entry in colRrep)
+            // {
+            //     // Console.WriteLine($"Cnum: '{entry.Cnum}' Cname: '{entry.Cname}' Clength: '{entry.Clength}' CRe: '{entry.Reable}'");
+            //     // string combinedString = string.Join( " ", ranCol);
+            //     // Console.WriteLine(combinedString);
+            // }
         }
     }
 }
